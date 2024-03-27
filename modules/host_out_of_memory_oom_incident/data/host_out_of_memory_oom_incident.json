@@ -3,6 +3,38 @@
   "description": "A Host Out of Memory(OOM) Incident occurs when a server or system runs out of memory, causing it to crash or become unresponsive. This can be caused by a variety of factors, such as an unexpected surge in traffic or insufficient resources allocated to the system. Resolving this type of incident requires identifying the root cause of the memory issue and taking appropriate measures such as optimizing system resources or increasing memory capacity.",
   "params": [
     {
+      "name": "POD_NAME",
+      "value": ""
+    },
+    {
+      "name": "NEW_VM_SIZE",
+      "value": ""
+    },
+    {
+      "name": "NEW_INSTANCE_TYPE",
+      "value": ""
+    },
+    {
+      "name": "INSTANCE_NAME",
+      "value": ""
+    },
+    {
+      "name": "INSTANCE_ID",
+      "value": ""
+    },
+    {
+      "name": "ZONE",
+      "value": ""
+    },
+    {
+      "name": "NEW_MACHINE_TYPE",
+      "value": ""
+    },
+    {
+      "name": "VM_NAME",
+      "value": ""
+    },
+    {
       "name": "HOST_NAME",
       "value": ""
     },
@@ -128,7 +160,7 @@
       "name": "cell_19",
       "type": "OP_LANG",
       "enabled": true,
-      "content": "host | host_name=$HOST_NAME | invoke_memory_usage_threshold_check()"
+      "content": "host | host_name=$HOST_NAME | invoke_memory_threshold_check()"
     },
     {
       "name": "cell_20",
@@ -140,7 +172,7 @@
       "name": "cell_21",
       "type": "OP_LANG",
       "enabled": true,
-      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `aws ec2 modify-instance-attribute --instance-id <your_instance_id> --instance-type <new_instance_type>`"
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `aws ec2 modify-instance-attribute --instance-id ${INSTANCE_ID} --instance-type ${NEW_INSTANCE_TYPE}`"
     },
     {
       "name": "cell_22",
@@ -152,7 +184,7 @@
       "name": "cell_23",
       "type": "OP_LANG",
       "enabled": true,
-      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az vm resize --resource-group <resource_group_name> --name <vm_name> --size <new_vm_size>`"
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `az vm resize --resource-group ${RESOURCE_GROUP_NAME} --name ${VM_NAME} --size ${NEW_VM_SIZE}`"
     },
     {
       "name": "cell_24",
@@ -164,7 +196,7 @@
       "name": "cell_25",
       "type": "OP_LANG",
       "enabled": true,
-      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `gcloud compute instances set-machine-type <instance_name> --machine-type <new_machine_type> --zone <zone>`"
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `gcloud compute instances set-machine-type $INSTANCE_NAME{} --machine-type ${NEW_MACHINE_TYPE} --zone ${ZONE}`"
     },
     {
       "name": "cell_26",
@@ -176,7 +208,7 @@
       "name": "cell_27",
       "type": "OP_LANG",
       "enabled": true,
-      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | limit=1 | random=1 | `kubectl edit pod <pod_name>`"
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | limit=1 | random=1 | `kubectl edit pod ${POD_NAME}`"
     }
   ]
 }
